@@ -1,7 +1,7 @@
 # 2 Ffast 2 Furious
 ## Or, The Narcissism of Small Differences
 
-Despite my disclaimer that my earlier example ([The ffast and the Furious](https://gist.github.com/moyix/46b7d7fdb9e100dad866821793b08058)) of a program that becomes vulnerable in the presence of a shared library that was built with `-ffast-math`, some still found it too unrealistic.
+Despite my disclaimer that my earlier example ([The ffast and the Furious](https://gist.github.com/moyix/46b7d7fdb9e100dad866821793b08058)) of a program that becomes vulnerable in the presence of a shared library that was built with `-ffast-math` was contrived, some still found it too unrealistic.
 
 This demo attempts to rectify that issue, thanks to [a nice idea from an1sotropy on Hacker News](https://news.ycombinator.com/item?id=32774694). The scenario is a program that plots a cool histogram of the differences between pairs of floating point numbers. Because the plot is drawn for the upper-left quadrant of a graph, the bin counts are reversed.
 
