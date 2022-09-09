@@ -44,7 +44,7 @@ $ ./2_ffast_2_furious float_data.csv
                     Difference
 ```
 
-Now run it in the mode that loads `gofast.so`, and watch Address Sanitizer catch an out-of-bounds read (witout address sanitizer, this would silently corrupt the heap metadata):
+Now run it in the mode that loads `gofast.so`, and watch Address Sanitizer catch an out-of-bounds read (without address sanitizer, this would silently corrupt the heap metadata):
 
 ```
 Loaded ./gofast.so
