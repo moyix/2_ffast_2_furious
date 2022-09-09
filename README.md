@@ -11,7 +11,7 @@ The actual vulnerability is very similar to the previous example: because `abs(a
 
 ## Building and Running
 
-Just run `make`:
+To build, just run `make`:
 
 ```
 $ make
