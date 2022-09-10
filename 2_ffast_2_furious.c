@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <math.h>
 #include <dlfcn.h>
 #include <sys/types.h>
@@ -23,21 +24,27 @@
 // result in a denormal number, which is then flushed to zero. This means that
 // the bin index becomes 0, which is a buffer overflow.
 void add_to_bin(int *bins, int bincount, float a, float b) {
-    int bin;
+    if (isnan(a) || isnan(b)) {
+        return;
+    }
+    unsigned int bin;
     // Programmer thinks: "As long as a != b, we'll get a non-zero difference,
     // so we can just take ceilf() to get the bin index."
     if (a != b) {
-        bin = (int)ceilf(a > b ? a - b : b - a);
+        float diff = ceilf(a > b ? a - b : b - a);
+        // Avoid overflow casting to unsigned int
+        if (diff > bincount) {
+            // Differences larger than bincount will be clamped to the last bin.
+            bin = bincount;
+        }
+        else {
+            bin = (unsigned int)diff;
+        }
     }
     else {
         bin = 1;
     }
-    // Differences larger than bincount will be clamped to the last bin.
-    // For simplicity I'm not doing any normalization based on the range of
-    // the input values.
-    if (bin > bincount) {
-        bin = bincount;
-    }
+
     if (bin == 0) fprintf(stderr, "DEBUG: Will write to bins[%d]\n", bincount - bin);
     bins[bincount - bin]++;
 }
@@ -146,6 +153,7 @@ int load_data_from_csv(const char *filename, float (**out_data)[][2], size_t *ou
     return 0;
 }
 
+#ifndef FUZZER
 int main(int argc, char **argv) {
     // Argument parsing
     if (argc < 2) {
@@ -187,6 +195,25 @@ int main(int argc, char **argv) {
 
     // Clean up
     free(data);
+    free(bins);
+
+    return 0;
+}
+#endif
+
+// Fuzzer entry point
+int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    if (size < 2*sizeof(float)) {
+        return 0;
+    }
+
+    int rows = size / (sizeof(float)*2);
+    int *bins = calloc(HIST_BINS, sizeof(int));
+    for (size_t i = 0; i < rows; i++) {
+        float a = ((float *)data)[i*2];
+        float b = ((float *)data)[i*2+1];
+        add_to_bin(bins, HIST_BINS, a, b);
+    }
     free(bins);
 
     return 0;

@@ -13,5 +13,8 @@ gofast.c:
 2_ffast_2_furious: 2_ffast_2_furious.c
 	$(CC) -o 2_ffast_2_furious 2_ffast_2_furious.c $(CFLAGS) $(LIBS)
 
+fuzzer: 2_ffast_2_furious.c
+	clang -o fuzzer 2_ffast_2_furious.c -fsanitize=fuzzer -DFUZZER $(CFLAGS) $(LIBS)
+
 clean:
-	rm -f gofast.so gofast.c 2_ffast_2_furious
+	rm -f gofast.so gofast.c 2_ffast_2_furious fuzzer
